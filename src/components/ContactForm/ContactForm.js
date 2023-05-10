@@ -5,6 +5,7 @@ import Notiflix from 'notiflix';
 import { selectContacts } from 'redux/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { addContacts } from 'redux/operations';
+import { useAddContactMutation, useGetContactsQuery } from 'redux/contactsApi';
 // import { addContacts } from 'reduxCopy/contactsSlice';
 
 // initial значення для бібліотеки formik
@@ -26,20 +27,21 @@ let userSchema = object().shape({
 });
 
 export default function ContactForm() {
-  // отримуємо список контактів щоб знайти чи при submit в нас не повторюється імя в списку
-  const contactsRedux = useSelector(selectContacts);
-
-  const dispatch = useDispatch();
+  const [fn, data] = useAddContactMutation();
+  const { data: contacts } = useGetContactsQuery();
 
   const handleSubmit = ({ name, number }, action) => {
+    console.log('name', name, number);
     //якщо імя повторюється випливає попередження
-    if (contactsRedux.find(contact => contact.name === name) !== undefined) {
+    if (contacts.find(contact => contact.name === name) !== undefined) {
       Notiflix.Notify.failure(`${name} already in your contact book`);
       return;
     }
     const contact = { name, phone: number };
+
+    fn(contact);
     // якщо не повторюється додаємо та робимо алерт про новий контакт
-    dispatch(addContacts(contact));
+
     Notiflix.Notify.success(`You added ${name} to phonebook`);
     //скидання полів форми
     action.resetForm();

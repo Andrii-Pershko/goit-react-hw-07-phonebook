@@ -1,36 +1,40 @@
-import { useDispatch, useSelector } from 'react-redux';
+// import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import css from './ContactList.module.css';
-import { selectIsLoading, selectVisibleContacts } from 'redux/selectors';
-import { deleteContacts, fetchContacts } from 'redux/operations';
-import { useEffect } from 'react';
+import {
+  useGetContactsQuery,
+  useDeleteContactsMutation,
+} from 'redux/contactsApi';
+import { selectFilterField } from 'redux/selectors';
 
 export default function ContactList() {
-  const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsLoading);
-  const contacts = useSelector(selectVisibleContacts);
+  const { data: contacts, isLoading } = useGetContactsQuery();
+  const [func] = useDeleteContactsMutation();
 
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
+  // беремо значення поля find contacts
+  const filterValue = useSelector(selectFilterField);
 
-  // при видалені контакту передаємо в deleteContacts id нашої кнопки який співпадає з id елемента
-  const handleDeleteContact = e => dispatch(deleteContacts(e.target.id));
+  // фільтруємо масив якщо було змінено значення поля find contacts
+  const filteredContacts = () =>
+    contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filterValue)
+    );
 
   return (
     <>
       {/* якщо виконується дія, показуємо Loading над нашим списком контактів */}
       {isLoading ? <div>Loading...</div> : ''}
       <ul>
-        {contacts.map(({ name, phone, id }) => (
-          <li key={id}>
-            <span className={css.name}> {name}:</span>
-            <span className={css.number}>{phone}</span>
-
-            <button type="button" id={id} onClick={handleDeleteContact}>
-              Delete
-            </button>
-          </li>
-        ))}
+        {!isLoading &&
+          filteredContacts().map(({ name, phone, id }) => (
+            <li key={id}>
+              <span className={css.name}> {name}:</span>
+              <span className={css.number}>{phone}</span>
+              <button type="button" id={id} onClick={() => func(id)}>
+                Delete
+              </button>
+            </li>
+          ))}
       </ul>
     </>
   );

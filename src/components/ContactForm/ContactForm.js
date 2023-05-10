@@ -2,8 +2,10 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { object, string } from 'yup';
 import css from './ContactForm.module.css';
 import Notiflix from 'notiflix';
+import { getContacts } from 'redux/selectors';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContacts } from 'redux/contactsSlice';
+import { addContacts } from 'redux/operations';
+// import { addContacts } from 'reduxCopy/contactsSlice';
 
 // initial значення для бібліотеки formik
 const initialValues = {
@@ -24,8 +26,8 @@ let userSchema = object().shape({
 });
 
 export default function ContactForm() {
-  //отримуємо список контактів щоб знайти чи при submit в нас не повторюється імя в списку
-  const contactsRedux = useSelector(state => state.contacts);
+  // отримуємо список контактів щоб знайти чи при submit в нас не повторюється імя в списку
+  const contactsRedux = useSelector(getContacts);
 
   const dispatch = useDispatch();
 
@@ -35,8 +37,9 @@ export default function ContactForm() {
       Notiflix.Notify.failure(`${name} already in your contact book`);
       return;
     }
+    const contact = { name, phone: number };
     // якщо не повторюється додаємо новий контакт
-    dispatch(addContacts(name, number));
+    dispatch(addContacts(contact));
     Notiflix.Notify.success(`You added ${name} to phonebook`);
     //скидання полів форми
     action.resetForm();
@@ -56,7 +59,7 @@ export default function ContactForm() {
         </label>
 
         <label>
-          <p>Number</p>
+          <p>Phone</p>
           <Field type="tel" name="number" />
           <ErrorMessage
             component="p"

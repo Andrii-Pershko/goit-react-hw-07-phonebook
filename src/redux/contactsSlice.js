@@ -1,32 +1,30 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
-import contactsList from 'backEnd_imitation/contacts';
+import { createSlice } from '@reduxjs/toolkit';
+// Імпортуємо операцію
+import { fetchContacts } from './operations';
 
-// ініцілюємо стартові контакти
-const contactInitialState = [...contactsList];
+const initialState = {
+  items: [],
+  isLoading: false,
+  error: null,
+};
 
-// створюємо slice для списку контактів
-const contactSlice = createSlice({
+const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: contactInitialState,
-  reducers: {
-    addContacts: {
-      reducer(state, { payload }) {
-        state.push(payload);
-      },
-      prepare(name, number) {
-        return {
-          payload: {
-            id: nanoid(),
-            name,
-            number,
-          },
-        };
-      },
+  initialState: initialState,
+  // Додаємо обробку зовнішніх екшенів
+  extraReducers: {
+    [fetchContacts.pending](state) {
+      state.isLoading = true;
     },
-    deleteContact: (state, { payload }) =>
-      state.filter(contact => contact.id !== payload),
+    [fetchContacts.fulfilled](state, action) {
+      state.isLoading = false;
+      state.items = action.payload;
+      state.error = null;
+    },
+    [fetchContacts.rejected](state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
-
-export const { addContacts, deleteContact } = contactSlice.actions;
-export const tasksReducer = contactSlice.reducer;
+export const contactsReducer = contactsSlice.reducer;

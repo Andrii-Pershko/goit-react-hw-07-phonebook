@@ -6,6 +6,7 @@ import {
   useDeleteContactsMutation,
 } from 'redux/contactsApi';
 import { selectFilterField } from 'redux/selectors';
+import Notiflix from 'notiflix';
 
 export default function ContactList() {
   const { data: contacts, isLoading } = useGetContactsQuery();
@@ -30,7 +31,14 @@ export default function ContactList() {
             <li key={id}>
               <span className={css.name}> {name}:</span>
               <span className={css.number}>{phone}</span>
-              <button type="button" id={id} onClick={() => func(id)}>
+              <button
+                type="button"
+                id={id}
+                onClick={() => {
+                  Notiflix.Notify.success(`You delete contact`);
+                  func(id);
+                }}
+              >
                 Delete
               </button>
             </li>

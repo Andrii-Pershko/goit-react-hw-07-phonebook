@@ -57,6 +57,7 @@ const contactsSlice = createSlice({
       .addCase(addContacts.fulfilled, handleAddContacts)
       .addCase(deleteContacts.fulfilled, handleDeleteContact)
       .addMatcher(isAnyOf(...processingOperations('pending'), handlePending))
+      // коли комітчу нижній рядок все працює але якщо повертається rejected з серверу взагалі все падає
       .addMatcher(isAnyOf(...processingOperations('rejected'), handleRej));
 
     //fetchContacts

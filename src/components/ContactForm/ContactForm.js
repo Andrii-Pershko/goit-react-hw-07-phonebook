@@ -2,9 +2,6 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { object, string } from 'yup';
 import css from './ContactForm.module.css';
 import Notiflix from 'notiflix';
-import { selectContacts } from 'redux/selectors';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContacts } from 'redux/operations';
 import { useAddContactMutation, useGetContactsQuery } from 'redux/contactsApi';
 // import { addContacts } from 'reduxCopy/contactsSlice';
 
@@ -27,7 +24,7 @@ let userSchema = object().shape({
 });
 
 export default function ContactForm() {
-  const [fn, data] = useAddContactMutation();
+  const [fn] = useAddContactMutation();
   const { data: contacts } = useGetContactsQuery();
 
   const handleSubmit = ({ name, number }, action) => {

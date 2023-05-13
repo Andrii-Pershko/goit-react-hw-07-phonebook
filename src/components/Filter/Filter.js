@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useGetContactsQuery } from 'redux/contactsApi';
 import { setStatusFilter } from 'redux/filterSlice';
 
